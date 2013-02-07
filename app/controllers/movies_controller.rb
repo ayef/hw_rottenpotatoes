@@ -7,7 +7,14 @@ class MoviesController < ApplicationController
   end
 
   def index
+  if params[:id] == nil   
     @movies = Movie.all
+    @hilite_column=''
+  else
+   @movies = Movie.order(params[:id] +' asc') 
+   @hilite_column=params[:id]+ '_header'
+  end
+
   end
 
   def new
@@ -38,4 +45,8 @@ class MoviesController < ApplicationController
     redirect_to movies_path
   end
 
+  def sort 
+   @movies = Movie.order(params[:id] +' asc') 
+#redirect_to movies_path
+  end
 end
