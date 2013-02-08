@@ -4,10 +4,10 @@
 %table#movies
   %thead
     %tr
-      %th
+      %th{@hilite_column == 'title_header'? {:class => 'hilite'} : {}}
         %a#title_header{:href=>movies_path({:id => 'title'})  } Movie Title
       %th Rating
-      %th
+      %th{@hilite_column  == 'release_date_header'? {:class => 'hilite'} : {}}
         %a#release_date_header{:href=>movies_path({:id => 'release_date'})} Release Date
       %th More Info
   %tbody
