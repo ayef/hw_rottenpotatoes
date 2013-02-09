@@ -7,12 +7,42 @@ class MoviesController < ApplicationController
   end
 
   def index
-  if params[:id] == nil   
-    @movies = Movie.all
+@msg = "start"
+  @all_ratings = Movie.get_ratings
+  @ratings = Hash.new  
+  if params[:ratings] == nil
+@msg += "in params[ratings] == nil"
+    @ratings['G']='1'
+    @ratings['PG']='1'
+    @ratings['PG-13']='1'
+    @ratings['R']='1'
+    params[:ratings] = @ratings
+  else 
+    @ratings['G']=0
+    @ratings['PG']=0
+    @ratings['PG-13']=0
+    @ratings['R']=0
+  end
+  @filter_string = []
+  params[:ratings].each do |key, value|
+    if value == "1"    
+      @filter_string << key 
+      @ratings[key]=1
+    else
+      @ratings[key] = 0
+    end
+  end
+
+  if params[:sort] == nil   
+@msg += "in if params[:sort] == nil"
+    @movies = Movie.where({:rating => @filter_string})
+#@movies = Movie.all
     @hilite_column=''
   else
-   @movies = Movie.order(params[:id] +' asc') 
-   @hilite_column=params[:id]+ '_header'
+@msg += "in else"
+    @movies = Movie.where({:rating => @filter_string}).order(params[:sort] + ' asc')
+#@movies = Movie.order(params[:id] +' asc') 
+    @hilite_column=params[:sort]+ '_header'
   end
 
   end
@@ -49,4 +79,5 @@ class MoviesController < ApplicationController
    @movies = Movie.order(params[:id] +' asc') 
 #redirect_to movies_path
   end
+
 end
