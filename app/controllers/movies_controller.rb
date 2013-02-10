@@ -54,7 +54,7 @@ class MoviesController < ApplicationController
       session[:ratings] = params[:ratings]
       flash.keep
       redirect_to :action => "index", :controller => "movies", :sort => params[:sort]
-    elsif session[:rating] != nil && session[:sort] == nil
+    elsif session[:ratings] != nil && session[:sort] == nil
       params[:ratings] = session[:ratings]
       flash.keep
       redirect_to :action => "index", :controller => "movies", :ratings => params[:ratings]
@@ -70,15 +70,6 @@ class MoviesController < ApplicationController
 
   end
   
-if params[:ratings]['G'] == '0' && params[:ratings]['PG'] == '0' && params[:ratings]['PG-13'] == '0' && params[:ratings]['R'] == '0'
-
-      @ratings['G']='1'
-      @ratings['PG']='1'
-      @ratings['PG-13']='1'
-      @ratings['R']='1'
-      params[:ratings] = @ratings
-      session[:ratings] = params[:ratings]
-end
     @filter_string = []
   params[:ratings].each do |key, value|
     if value == "1"    
