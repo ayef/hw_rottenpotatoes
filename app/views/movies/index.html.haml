@@ -4,7 +4,6 @@
     = rating
     = check_box_tag "ratings[#{rating}]", @ratings[rating]  == 1 ? 1:1, @ratings[rating] == 1? true: false
   = submit_tag('Refresh', :id =>'ratings_submit')
-
 %h1 All Movies
 %table#movies
   %thead

@@ -7,23 +7,71 @@ class MoviesController < ApplicationController
   end
 
   def index
-@msg = "start"
+
+  @msg = "start"
   @all_ratings = Movie.get_ratings
   @ratings = Hash.new  
-  if params[:ratings] == nil
-@msg += "in params[ratings] == nil"
-    @ratings['G']='1'
-    @ratings['PG']='1'
-    @ratings['PG-13']='1'
-    @ratings['R']='1'
-    params[:ratings] = @ratings
-  else 
-    @ratings['G']=0
-    @ratings['PG']=0
-    @ratings['PG-13']=0
-    @ratings['R']=0
+
+  if params[:ratings] != nil && params[:sort] != nil
+    session[:ratings] = params[:ratings]
+    session[:sort] = params[:sort]
+
+  elsif params[:ratings] != nil && params[:sort] == nil
+    session[:ratings] = params[:ratings]
+    if session[:sort] != nil
+      params[:sort] = session[:sort]
+      flash.keep
+      redirect_to :action => "index", :controller => "movies", :sort => params[:sort], :ratings => params[:ratings]
+    end
+  elsif params[:ratings] == nil && params[:sort] != nil
+    session[:sort] = params[:sort]
+    if session[:ratings] != nil
+      params[:ratings] = session[:ratings]
+      flash.keep
+      redirect_to :action => "index", :controller => "movies", :sort => params[:sort], :ratings => params[:ratings]
+    else
+      @ratings['G']='1'
+      @ratings['PG']='1'
+      @ratings['PG-13']='1'
+      @ratings['R']='1'
+      params[:ratings] = @ratings
+      session[:ratings] = params[:ratings]
+    end
+
+  else #arams[:ratings] == nil && params[:sort] == nil
+    if session[:ratings] != nil && session[:sort] != nil
+      params[:ratings] = session[:ratings]
+      params[:sort] = session[:sort]
+      flash.keep
+      redirect_to :action => "index", :controller => "movies", :sort => params[:sort], :ratings => params[:ratings]
+    elsif session[:ratings] == nil && session[:sort] != nil
+      params[:sort] = session[:sort]
+      @ratings['G']='1'
+      @ratings['PG']='1'
+      @ratings['PG-13']='1'
+      @ratings['R']='1'
+      params[:ratings] = @ratings
+      session[:ratings] = params[:ratings]
+      flash.keep
+      redirect_to :action => "index", :controller => "movies", :sort => params[:sort], :ratings => params[:ratings]
+    elsif session[:rating] != nil && session[:sort] == nil
+      params[:ratings] = session[:ratings]
+      flash.keep
+      redirect_to :action => "index", :controller => "movies", :ratings => params[:ratings]
+    else
+      @ratings['G']='1'
+      @ratings['PG']='1'
+      @ratings['PG-13']='1'
+      @ratings['R']='1'
+      params[:ratings] = @ratings
+      session[:ratings] = params[:ratings]
+    end
+
+
   end
-  @filter_string = []
+  
+  
+    @filter_string = []
   params[:ratings].each do |key, value|
     if value == "1"    
       @filter_string << key 
@@ -40,6 +88,8 @@ class MoviesController < ApplicationController
     @hilite_column=''
   else
 @msg += "in else"
+    session[:sort] = params[:sort]
+    
     @movies = Movie.where({:rating => @filter_string}).order(params[:sort] + ' asc')
 #@movies = Movie.order(params[:id] +' asc') 
     @hilite_column=params[:sort]+ '_header'
@@ -77,7 +127,6 @@ class MoviesController < ApplicationController
 
   def sort 
    @movies = Movie.order(params[:id] +' asc') 
-#redirect_to movies_path
   end
 
 end
